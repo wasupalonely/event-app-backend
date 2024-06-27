@@ -1,14 +1,14 @@
-package com.backend.eventsapp.eventapp.models.entities.models;
+package com.backend.eventsapp.eventapp.models.entities;
 
-import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -17,19 +17,16 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "posts")
-public class Post {
+@Table(name = "event_category")
+public class EventCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank
-    private String content;
-
     @Column(nullable = false)
-    private LocalDateTime date;
+    private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "event_id", nullable = false)
-    private Event event;
+    @OneToMany(mappedBy = "category")
+    private Set<Event> events = new HashSet<>();
 }

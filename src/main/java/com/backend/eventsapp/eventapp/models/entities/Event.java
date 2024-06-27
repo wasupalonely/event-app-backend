@@ -1,4 +1,4 @@
-package com.backend.eventsapp.eventapp.models.entities.models;
+package com.backend.eventsapp.eventapp.models.entities;
 
 import java.util.HashSet;
 import java.util.Set;

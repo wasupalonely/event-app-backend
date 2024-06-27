@@ -12,6 +12,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import com.backend.eventsapp.eventapp.auth.filters.JwtAuthenticationFilter;
+import com.backend.eventsapp.eventapp.auth.filters.JwtValidationFilter;
+
 @Configuration
 public class SecurityConfig {
     @Autowired
@@ -33,8 +36,11 @@ public class SecurityConfig {
                 .sessionManagement(
                         sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
-                        authorizeRequests -> authorizeRequests.requestMatchers(HttpMethod.GET, "/events").permitAll()
-                                .anyRequest().authenticated());
+                        authorizeRequests -> authorizeRequests.requestMatchers(HttpMethod.GET, "/users").permitAll()
+                                .anyRequest().authenticated())
+                .addFilter(new JwtAuthenticationFilter(authenticationConfiguration.getAuthenticationManager()))
+                .addFilter(new JwtValidationFilter(authenticationConfiguration.getAuthenticationManager()));
+
         return http.build();
     }
 }

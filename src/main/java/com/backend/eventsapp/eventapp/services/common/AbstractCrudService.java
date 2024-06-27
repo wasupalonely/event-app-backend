@@ -1,4 +1,4 @@
-package com.backend.eventsapp.eventapp.services;
+package com.backend.eventsapp.eventapp.services.common;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
@@ -32,7 +32,7 @@ public abstract class AbstractCrudService<T, ID, R extends CrudRepository<T, ID>
 
     @Override
     @Transactional
-    public T update(T entity, ID id) {
+    public T update(ID id, T entity) {
         if (!repository.existsById(id)) {
             throw new RuntimeException("Entity not found with id " + id);
         }
