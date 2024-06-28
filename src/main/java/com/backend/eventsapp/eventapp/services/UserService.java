@@ -1,12 +1,17 @@
 package com.backend.eventsapp.eventapp.services;
 
+import com.backend.eventsapp.eventapp.models.entities.Role;
 import com.backend.eventsapp.eventapp.models.entities.User;
+import com.backend.eventsapp.eventapp.repositories.RoleRepository;
 import com.backend.eventsapp.eventapp.repositories.UserRepository;
 import com.backend.eventsapp.eventapp.services.common.AbstractCrudService;
+import com.backend.eventsapp.eventapp.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +21,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,11 +30,23 @@ public class UserService extends AbstractCrudService<User, Long, UserRepository>
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private RoleRepository roleRepository;
+
     @Override
     @Transactional
-    public User save(User entity) {
-        entity.setPassword(passwordEncoder.encode(entity.getPassword()));
-        return super.save(entity);
+    public User save(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        Optional<Role> role = roleRepository.findByName("ROLE_USER");
+        Set<Role> roles = new HashSet<>();
+        if (role.isPresent()) {
+            roles.add(role.orElseThrow());
+        }
+
+        user.setRoles(roles);
+
+        return super.save(user);
     }
 
     @Override
@@ -56,11 +71,10 @@ public class UserService extends AbstractCrudService<User, Long, UserRepository>
     @Override
     @Transactional
     public User update(Long id, User entity) {
-        User user = repository.findById(id)
+        User user = super.repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id " + id));
 
-        String[] ignoreProperties = { "id", "password" };
-        BeanUtils.copyProperties(entity, user, ignoreProperties);
+        BeanUtils.copyProperties(entity, user, Utils.getNullAndExcludedPropertyNames(entity, "id", "password"));
 
         return super.save(user);
     }

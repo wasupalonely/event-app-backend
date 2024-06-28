@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/users")
@@ -49,13 +49,12 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody User user) {
-        System.out.println("PARAMS ---> " + id);
-
         try {
             User updatedUser = userService.update(id, user);
             return ResponseEntity.ok(updatedUser); 
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found with id 1" + id);
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found with id" + id);
         }
     }
 

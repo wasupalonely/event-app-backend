@@ -15,6 +15,12 @@ import lombok.Setter;
 @Setter
 @Table(name = "roles")
 public class Role {
+    public Role() {}
+    
+    public Role(@NotBlank String name) {
+        this.name = name;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,4 +28,6 @@ public class Role {
     @NotBlank
     @Column(nullable = false, unique = true)
     private String name;
+
+    
 }
