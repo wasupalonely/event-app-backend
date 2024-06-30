@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.eventsapp.eventapp.models.entities.EventCategory;
 import com.backend.eventsapp.eventapp.services.EventCategoryService;
@@ -19,8 +21,10 @@ import com.backend.eventsapp.eventapp.utils.Utils;
 
 import jakarta.validation.Valid;
 
+@RestController
+@RequestMapping("/event-categories")
 public class EventCategoryController {
-@Autowired
+    @Autowired
     private EventCategoryService eventCategoryService;
 
     @GetMapping
@@ -46,7 +50,7 @@ public class EventCategoryController {
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody EventCategory eventCategory) {
         try {
             EventCategory updatedEventCat = eventCategoryService.update(id, eventCategory);
-            return ResponseEntity.ok(updatedEventCat); 
+            return ResponseEntity.ok(updatedEventCat);
         } catch (RuntimeException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event category not found with id" + id);

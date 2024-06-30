@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.eventsapp.eventapp.models.entities.Post;
 import com.backend.eventsapp.eventapp.services.PostService;
@@ -19,6 +21,8 @@ import com.backend.eventsapp.eventapp.utils.Utils;
 
 import jakarta.validation.Valid;
 
+@RestController
+@RequestMapping("/posts")
 public class PostController {
     @Autowired
     private PostService postService;
@@ -31,6 +35,11 @@ public class PostController {
     @GetMapping("/{id}")
     public ResponseEntity<Post> findById(@PathVariable Long id) {
         return postService.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/event/{id}")
+    public ResponseEntity<List<Post>> findByEventId(@PathVariable Long eventId) {
+        return ResponseEntity.ok(postService.findByEventId(eventId));
     }
 
     @PostMapping

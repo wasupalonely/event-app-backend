@@ -7,11 +7,11 @@ import com.backend.eventsapp.eventapp.repositories.UserRepository;
 import com.backend.eventsapp.eventapp.services.common.AbstractCrudService;
 import com.backend.eventsapp.eventapp.utils.Utils;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,8 +55,10 @@ public class UserService extends AbstractCrudService<User, Long, UserRepository>
         User user = repository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User %s not found", usernameOrEmail)));
 
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        List<GrantedAuthority> authorities = user.getRoles()
+                .stream()
+                .map(r -> new SimpleGrantedAuthority(r.getName()))
+                .collect(Collectors.toList());
 
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),

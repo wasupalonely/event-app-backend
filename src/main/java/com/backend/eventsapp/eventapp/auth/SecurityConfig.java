@@ -36,7 +36,36 @@ public class SecurityConfig {
                 .sessionManagement(
                         sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
-                        authorizeRequests -> authorizeRequests.requestMatchers(HttpMethod.GET, "/users").permitAll()
+                        authorizeRequests -> authorizeRequests
+                                // EVENTS
+                                .requestMatchers(HttpMethod.GET, "/events").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/events/{id}").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/events").hasAnyRole("USER", "ADMIN")
+                                .requestMatchers("/events/**").hasAnyRole("ADMIN", "USER")
+
+                                // CATEGORIES
+                                .requestMatchers(HttpMethod.GET, "/categories").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/categories/{id}").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/categories").hasAnyRole("ADMIN")
+                                .requestMatchers("/categories/**").hasAnyRole("ADMIN")
+
+                                // POSTS
+                                .requestMatchers(HttpMethod.GET, "/posts").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/posts/{id}").hasRole("USER")
+                                .requestMatchers(HttpMethod.GET, "/posts/event/{id}").hasAnyRole("ADMIN", "USER")
+                                .requestMatchers(HttpMethod.POST, "/posts").hasAnyRole("USER", "ADMIN")
+                                .requestMatchers("/posts/**").hasAnyRole("ADMIN", "USER")
+
+                                // ROLES
+                                .requestMatchers("/roles").hasRole("ADMIN")
+                                .requestMatchers("/roles/**").hasRole("ADMIN")
+
+                                // USERS
+                                .requestMatchers(HttpMethod.GET, "/users/{id}").hasRole("USER")
+                                .requestMatchers(HttpMethod.POST, "/users").permitAll()
+                                .requestMatchers(HttpMethod.DELETE, "/users/{id}").hasRole("USER")
+                                .requestMatchers("/users/**").hasAnyRole("ADMIN", "USER")
+
                                 .anyRequest().authenticated())
                 .addFilter(new JwtAuthenticationFilter(authenticationConfiguration.getAuthenticationManager()))
                 .addFilter(new JwtValidationFilter(authenticationConfiguration.getAuthenticationManager()));
